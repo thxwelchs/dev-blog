@@ -8,7 +8,7 @@
   "scripts": {
     "build": "gatsby build",
     "clean": "rimraf public",
-    "dev": "gatsby develop",
+    "dev": "gatsby develop --open",
     "lint": "eslint src/**/**/*.tsx",
     "lint:fix": "eslint --fix src/**/*/*.tsx",
     "start": "npm run dev",
