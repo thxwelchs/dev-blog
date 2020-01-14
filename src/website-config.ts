@@ -54,7 +54,7 @@ const config: WebsiteConfig = {
   coverImage: 'img/blog-cover.jpg',
   logo: 'img/thxwelchs-logo-v2.png',
   lang: 'en',
-  siteUrl: 'https://gatsby-casper.netlify.com',
+  siteUrl: 'https://thxwelchs.github.io',
   facebook: '',
   twitter: '',
   showSubscribe: false,

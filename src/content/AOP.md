@@ -1,7 +1,7 @@
 ---
 layout: post
 category: "Java"
-title: "JVM GC종류와 튜닝"
+title: "AOP 관점지향프로그래밍"
 author: thxwelchs
 tags: ["aop", "java", "spring"]
 image: img/AOP-postbg.jpg

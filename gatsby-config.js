@@ -1,10 +1,11 @@
 const path = require('path');
 
 module.exports = {
+  pathPrefix: "/thxwelchs.github.io",
   siteMetadata: {
-    title: `thxwelchs's dev-blog`,
-    description: `GDD`,
-    siteUrl: 'https://gatsby-casper.netlify.com', // full path to blog - no ending slash
+    title: `GDD blog`,
+    description: '오늘도 열심히 GDD(Google Driven Development)',
+    siteUrl: 'https://thxwelchs.github.io', // full path to blog - no ending slash
   },
   mapping: {
     'MarkdownRemark.frontmatter.author': 'AuthorYaml',
