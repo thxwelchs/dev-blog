@@ -1,4 +1,5 @@
 ---
+category: null
 layout: post
 title: "Welcome to Ghost"
 author: Ghost

@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   siteMetadata: {
     title: `thxwelchs's dev-blog`,
-    description: `개발 블로그`,
+    description: `GDD`,
     siteUrl: 'https://gatsby-casper.netlify.com', // full path to blog - no ending slash
   },
   mapping: {
@@ -12,6 +12,12 @@ module.exports = {
   plugins: [
     'gatsby-plugin-sitemap',
     'gatsby-plugin-sharp',
+    {
+      resolve: `gatsby-plugin-disqus`,
+      options: {
+        shortname: `thxwelchs`,
+      },
+    },
     {
       resolve: 'gatsby-source-filesystem',
       options: {

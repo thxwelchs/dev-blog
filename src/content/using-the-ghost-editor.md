@@ -1,4 +1,5 @@
 ---
+category: null
 layout: post
 title: "Using The Ghost Editor"
 author: Ghost

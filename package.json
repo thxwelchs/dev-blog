@@ -6,6 +6,7 @@
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "deploy": "gatsby build && gh-pages -d public -b master -r https://github.com/thxwelchs/thxwelchs.github.io",
     "build": "gatsby build",
     "clean": "rimraf public",
     "dev": "gatsby develop --open",
@@ -74,6 +75,7 @@
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-react": "7.14.3",
     "eslint-plugin-react-hooks": "1.6.1",
+    "gh-pages": "^2.2.0",
     "rimraf": "2.6.3",
     "typescript": "3.5.3"
   },

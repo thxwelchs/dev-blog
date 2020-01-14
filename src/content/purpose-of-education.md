@@ -1,4 +1,5 @@
 ---
+category: null
 layout: post
 title: "The Purpose of Education"
 author: Ghost

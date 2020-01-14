@@ -1,4 +1,5 @@
 ---
+category: null
 layout: post
 title: A Full and Comprehensive Style Test
 image: img/testimg-cover.jpg

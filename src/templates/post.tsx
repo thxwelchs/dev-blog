@@ -208,7 +208,6 @@ export interface PageContext {
 
 const PageTemplate: React.FC<PageTemplateProps> = props => {
   const post = props.data.markdownRemark;
-  console.log(props);
   let width = '';
   let height = '';
   if (post.frontmatter.image && post.frontmatter.image.childImageSharp) {
@@ -331,7 +330,7 @@ export default PageTemplate;
 
 export const query = graphql`
   query($slug: String, $primaryTag: String) {
-    logo: file(relativePath: { eq: "img/ghost-logo.png" }) {
+    logo: file(relativePath: { eq: "img/thxwelchs-logo-v2.png" }) {
       childImageSharp {
         fixed {
           ...GatsbyImageSharpFixed
