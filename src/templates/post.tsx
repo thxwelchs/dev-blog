@@ -6,7 +6,7 @@ import * as React from 'react';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import { Helmet } from 'react-helmet';
-
+import { Disqus, CommentCount } from 'gatsby-plugin-disqus'
 import AuthorCard from '../components/AuthorCard';
 import Footer from '../components/Footer';
 import SiteNav from '../components/header/SiteNav';
@@ -208,6 +208,13 @@ export interface PageContext {
 
 const PageTemplate: React.FC<PageTemplateProps> = props => {
   const post = props.data.markdownRemark;
+
+  let disqusConfig = {
+    url: `${config.siteUrl+location.pathname}`,
+    identifier: post.id,
+    title: post.frontmatter.title,
+  }
+
   let width = '';
   let height = '';
   if (post.frontmatter.image && post.frontmatter.image.childImageSharp) {
@@ -320,6 +327,8 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
             </ReadNextFeed>
           </div>
         </aside>
+        <CommentCount config={disqusConfig} />
+        <Disqus config={disqusConfig} />
         <Footer />
       </Wrapper>
     </IndexLayout>
