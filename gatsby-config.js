@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  pathPrefix: "/thxwelchs.github.io",
   siteMetadata: {
     title: `thxwelchs's dev-blog`,
     description: `GDD`,
