@@ -128,6 +128,7 @@ interface PageTemplateProps {
       };
     };
     markdownRemark: {
+      id: string;
       html: string;
       htmlAst: any;
       excerpt: string;
