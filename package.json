@@ -6,8 +6,8 @@
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "deploy": "gatsby build && gh-pages -d public -b master -r https://github.com/thxwelchs/thxwelchs.github.io",
-    "build": "gatsby build",
+    "deploy": "yarn build && gh-pages -d public -b master -r https://github.com/thxwelchs/thxwelchs.github.io",
+    "build": "gatsby clean && gatsby build",
     "clean": "rimraf public",
     "dev": "gatsby develop --open",
     "lint": "eslint src/**/**/*.tsx",
