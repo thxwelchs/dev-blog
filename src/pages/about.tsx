@@ -37,6 +37,7 @@ const About: React.FC = () => (
           <PostFullContent className="post-full-content">
             <div className="post-content">
               <p>
+                <strong>thxwelchs@gmail.com</strong><br/>
               디지털 문화와 데이터 구체화를 좋아하고 DevOps, Agile문화에 적극적으로 기여해보고 싶은 이태훈입니다.
 
               저는 스마트팩토리 관련 소프트웨어 스타트업 초기 창업멤버로 시작하면서부터 본격적으로 개발을 시작하였고,
@@ -50,7 +51,7 @@ const About: React.FC = () => (
               </p>
 
               <p>
-                <h4>다음 사항들을 항상 명심하면서 개발해보기!</h4>
+                <h4>2020년부턴 꼭 명심해야 할 것들</h4>
                 <ul>
                   <li>컴퓨터는 거짓말을 하지 않는다. 문제가 있다면 대부분 사람이 문제</li>
                   <li>거의 대부분의 문제는 로그를 보면 나와 있다.</li>
