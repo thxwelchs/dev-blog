@@ -20,7 +20,8 @@ Orientation은 정수 1~8 사이의 값으로 저장 되고, 이 값의 의미�
 일정한 규칙이 있긴 하나, 프로토콜 처럼 정확히 약속된 것은 아닌 것 같습니다. 일단은
 이 규칙에 따라 변환 시켜야 합니다.
 
-다음과 같이 Mac의 Preview로 Exit의 방향(Orientation 값을 볼 수 있습니다.) 사실상 이 사진은 반시계 방향으로 90도 회전 되어 있어야 맞는건데, Mac의 Preview가 orientation 값을 읽어 보기 좋게 보여주는 것 같습니다.
+다음은 제가 준비한 Orientation 태그가 기록되어 있는 sample 이미지 입니다.\
+이렇게 Mac의 Preview로 보면 Exit의 방향(Orientation)값을 볼 수 있습니다. 사실상 이 사진은 반시계 방향으로 90도 회전 되어 있어야 맞는건데, Mac의 Preview가 orientation 값을 읽어 보기 좋게 회전 시켜 보여주는 것 같습니다.
 
 ![Exif/Untitled.png](img/METADATA-EXIF-Untitled.png)
 
@@ -119,7 +120,7 @@ def "이미지 메타데이터 읽어서 회전시켜 저장하기 테스트"() 
         def height = img.getHeight()
         
                 // orientation 값에 의한 아핀 변환 ( 아핀변환은 기회가 되면 다음 포스팅 때 작성해보겠습니다.)
-                def tf = new AffineTransform()
+        def tf = new AffineTransform()
         switch (orientatation) {
             case 1:
                 break;
@@ -162,15 +163,15 @@ def "이미지 메타데이터 읽어서 회전시켜 저장하기 테스트"() 
 
         expect:
         ImageIO.write(destinationImage, "jpg", resizedFile)
+        orientatation == 5
 
-        orientatation == expectOrientatation
-
-        where:
-        expectOrientatation |
-        5
 ```
 
-![Exif/Untitled%201.png](img/METADATA-EXIF-Untitled%201.png)
+## 테스트 디버깅
+테스트 결과 orientatation 값도 정상적으로 찍히고, 변환된 이미지도 잘 생성되었습니다.
+![Exif/Untitled%201.png](img/METADATA-EXIF-Untitled1.png)
+\
+확인해볼까요?
 
 ## 이미지 변환 결과
 
@@ -178,11 +179,18 @@ Mac Preview에서는 오리엔테이션 값에 의해 회전시켜버리기 때�
 
 원본
 
-![Exif/Untitled%202.png](img/METADATA-EXIF-Untitled%202.png)
+![Exif/Untitled%202.png](img/METADATA-EXIF-Untitled2.png)
 
 변형본
 
-![Exif/Untitled%203.png](img/METADATA-EXIF-Untitled%203.png)
+![Exif/Untitled%203.png](img/METADATA-EXIF-Untitled3.png)
+
+이렇게 이미지의 메타데이터 정보 Exif를 활용해 서버사이드에서 이미지를 회전해 저장시키는 방법을 알아봤습니다. 물론 이 방법 외에도 수많은 다양한 방법들이 있으니 시도해보시는 것도 좋을 것 같습니다.
+
+
+<u><span style="color:#e96900;">
+혹시나 잘못된 점이 있거나 정보가 틀렸다면 반드시 코멘트 혹은 <a href="mailto:thxwelchs@gmail.com">이메일</a>로 알려주시면 감사하겠습니다!
+</span></u>
 
 참고
 
