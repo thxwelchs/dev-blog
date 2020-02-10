@@ -10,7 +10,7 @@ export const PostFullContent = styled.section`
   margin: 0 auto;
   padding: 70px 100px 0;
   min-height: 230px;
-  font-family: Georgia, serif;
+  /* font-family: Georgia, serif; */
   font-size: 2.2rem;
   line-height: 1.6em;
   background: #fff;
