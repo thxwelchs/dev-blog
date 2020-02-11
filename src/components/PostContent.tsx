@@ -11,7 +11,7 @@ export const PostFullContent = styled.section`
   padding: 70px 100px 0;
   min-height: 230px;
   /* font-family: Georgia, serif; */
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   line-height: 1.6em;
   background: #fff;
 
@@ -408,6 +408,11 @@ export const PostFullContent = styled.section`
   }
 
   /* Code blocks */
+  code[class*='language-'] {
+    color: #ff8200;
+    background: #252525;
+  }
+
   pre[class*='language-'] {
     overflow: auto;
     padding: 1.3125rem;

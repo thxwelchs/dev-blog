@@ -21,6 +21,7 @@ draft: false
 
 ![img/react-deubgging-Untitled.png](img/react-debugging-Untitled.png)
 
+\
 어쨌든 디버거를 활용 안했던 지난 날을 지워버리고 지금부터라도 활용하는 방법을 알아보겠습니다.
 
 먼저 vscode의 extension을 하나 설치하셔야 하는데요 
