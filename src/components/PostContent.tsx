@@ -408,7 +408,7 @@ export const PostFullContent = styled.section`
   }
 
   /* Code blocks */
-  code[class*='language-'] {
+  code[class*='language-text'] {
     color: #ff8200;
     background: #252525;
   }
