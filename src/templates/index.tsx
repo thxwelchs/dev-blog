@@ -1,5 +1,5 @@
 import { graphql } from 'gatsby';
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import { css } from '@emotion/core';
 import Helmet from 'react-helmet';
 
@@ -93,6 +93,19 @@ export interface IndexProps {
 const IndexPage: React.FC<IndexProps> = props => {
   const width = props.data.header.childImageSharp.fluid.sizes.split(', ')[1].split('px')[0];
   const height = String(Number(width) / props.data.header.childImageSharp.fluid.aspectRatio);
+
+  const doDeckdeckgoHIghLOightCodeLoader = async () => {
+    try {
+      const deckdeckgoHighlightCodeLoader = require("@deckdeckgo/highlight-code/dist/loader")
+      await deckdeckgoHighlightCodeLoader.defineCustomElements(window)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+      doDeckdeckgoHIghLOightCodeLoader()
+  }, [])
 
   return (
     <IndexLayout css={HomePosts}>
