@@ -2,7 +2,7 @@ import { graphql, Link } from 'gatsby';
 import Img from 'gatsby-image';
 import * as _ from 'lodash';
 import { setLightness } from 'polished';
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import { Helmet } from 'react-helmet';
@@ -223,6 +223,19 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
     width = post.frontmatter.image.childImageSharp.fluid.sizes.split(', ')[1].split('px')[0];
     height = String(Number(width) / post.frontmatter.image.childImageSharp.fluid.aspectRatio);
   }
+
+  const doDeckdeckgoHIghLOightCodeLoader = async () => {
+    try {
+      const deckdeckgoHighlightCodeLoader = require("@deckdeckgo/highlight-code/dist/loader")
+      await deckdeckgoHighlightCodeLoader.defineCustomElements(window)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+      doDeckdeckgoHIghLOightCodeLoader()
+  }, [post.id])
 
   return (
     <IndexLayout className="post-template">
