@@ -225,7 +225,7 @@ class JacksonConfig {
 하지만 여기서 끝이 아닙니다. 현재까지는양방향관계에서  `@ManyToOne` 를 가진 쪽의 엔티티 조회에서 문제를 해결했는데요, 
 
 아직 `@OneToMany`의 관계를 가진 엔티티를 lazy load 조회 할 때 문제가 있습니다. 
-
+<br/>
 이 부분까지 해결하기 위해서는 여러가지의 솔루션이 있는데 그 중 하나를 다음 포스팅에서 소개하겠습니다.
  [JPA 양방향 관계 무한재귀 해결 포스팅 보러가기](https://thxwelchs.github.io/JPA%20%EC%96%91%EB%B0%A9%ED%96%A5%20Entity%20%EB%AC%B4%ED%95%9C%20%EC%9E%AC%EA%B7%80%20%EB%AC%B8%EC%A0%9C%20%ED%95%B4%EA%B2%B0/)
 
