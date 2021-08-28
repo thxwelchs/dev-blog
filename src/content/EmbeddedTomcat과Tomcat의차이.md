@@ -71,14 +71,10 @@ virtual host라는 기능은 이런겁니다.
 
 ```xml
 <!--...-->
-<Host name=”a.thxwelchs.com”  appBase=”/webapps/weba″
-unpackWARs=”true” autoDeploy=”true”
-xmlValidation=”false” xmlNamespaceAware=”false”>
+<Host name="a.thxwelchs.com"  appBase="/webapps/weba" unpackWARs="true" autoDeploy="true" xmlValidation="false" xmlNamespaceAware="false">
 </Host>
 
-<Host name=”b.thxwelchs.com”  appBase=”/webapps/webb″
-unpackWARs=”true” autoDeploy=”true”
-xmlValidation=”false” xmlNamespaceAware=”false”>
+<Host name="b.thxwelchs.com"  appBase="/webapps/webb" unpackWARs="true" autoDeploy="true" xmlValidation="false" xmlNamespaceAware="false">
 </Host>
 <!--...-->
 ```
