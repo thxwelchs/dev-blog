@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "springboot"
+category: "Spring"
 title: "JPA N+1현상 삽질"
 author: thxwelchs
 tags: ["springboot", "jpa", "N+1", "fetch join"]

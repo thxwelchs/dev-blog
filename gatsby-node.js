@@ -113,6 +113,19 @@ exports.createPages = async ({ graphql, actions }) => {
     throw new Error(result.errors);
   }
 
+  const categoriesResult = await graphql(`
+    {
+      allMarkdownRemark {
+        categories: distinct(field: frontmatter___category)
+      }
+    }
+  `);
+
+  if (categoriesResult.errors) {
+    console.error(categoriesResult.errors);
+    throw new Error(categoriesResult.errors);
+  }
+
   // Create post pages
   const posts = result.data.allMarkdownRemark.edges;
 
@@ -160,7 +173,20 @@ exports.createPages = async ({ graphql, actions }) => {
     });
   });
 
-  // Create tag pages
+  // Create category pages
+  const categoryTemplate = path.resolve('./src/templates/categories.tsx');
+  const { categories } = categoriesResult.data.allMarkdownRemark;
+  console.log('categories', categories)
+  categories.forEach(category=> {
+    createPage({
+      path: `/category/${category}/`,
+      component: categoryTemplate,
+      context: {
+        category,
+      },
+    });
+  });
+
   const tagTemplate = path.resolve('./src/templates/tags.tsx');
   const tags = _.uniq(
     _.flatten(

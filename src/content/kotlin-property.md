@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "kotlin"
+category: "Kotlin"
 title: "코틀린 필드와 속성"
 author: thxwelchs
 tags: ["kotlin", "property", "field"]

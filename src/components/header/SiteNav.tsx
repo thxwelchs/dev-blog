@@ -1,5 +1,5 @@
 // tslint:disable:no-http-string
-import { Link } from 'gatsby';
+import { StaticQuery, graphql, Link } from 'gatsby';
 import * as React from 'react';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
@@ -58,7 +58,7 @@ const NavStyles = css`
     display: block;
     margin: 0;
     padding: 0;
-    text-transform: uppercase;
+    // text-transform: uppercase;
   }
 
   li a {
@@ -127,6 +127,7 @@ class SiteNav extends React.Component<SiteNavProps> {
 
   render() {
     const { isHome = false } = this.props;
+    console.log(this.props);
     return (
       <nav css={[isHome && HomeNavRaise, SiteNavStyles]}>
         <SiteNavLeft>
@@ -139,6 +140,19 @@ class SiteNav extends React.Component<SiteNavProps> {
             <li role="menuitem">
               <Link to="/about">About</Link>
             </li>
+            <StaticQuery
+              query={graphql`
+                query {
+                  allMarkdownRemark {
+                    categories: distinct(field: frontmatter___category)
+                  }
+                }
+              `
+              }
+              render={data => {
+                return data.allMarkdownRemark.categories.map((category: string) => <li role="menuitem" key={category}><Link to={`/category/${category}/`}>{category}</Link></li>)
+              }}
+            />
             {/* <li role="menuitem">
               <Link to="/tags/getting-started/">Getting Started</Link>
             </li>
@@ -183,3 +197,11 @@ class SiteNav extends React.Component<SiteNavProps> {
 }
 
 export default SiteNav;
+
+// export const query = graphql`
+//   query {
+//     allMarkdownRemark {
+//       categories: distinct(field: frontmatter___category)
+//     }
+//   }
+// `

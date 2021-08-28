@@ -1,6 +1,6 @@
 ---
 layout: post
-category: "react"
+category: "React"
 title: "React debugging 하기"
 author: thxwelchs
 tags: ["react", "deubg"]
