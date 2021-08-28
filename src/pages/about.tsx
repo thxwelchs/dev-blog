@@ -9,6 +9,7 @@ import { PostFullHeader, PostFullTitle, NoImage, PostFull } from '../templates/p
 import { PostFullContent } from '../components/PostContent';
 import Footer from '../components/Footer';
 import Helmet from 'react-helmet';
+import notionImage from './notion.png';
 
 const PageTemplate = css`
   .site-main {
@@ -25,6 +26,26 @@ const PageTemplate = css`
 
     span:first-of-type {
       margin-left: 0;
+    }
+
+  }
+  
+  .notion-page {
+    display: inline-flex;
+    justify-content: flex-start;
+    img {
+      display: inline;
+      margin: 0;
+    }
+    a {
+      display:flex;
+      span {
+        align-self: flex-end;
+      }
+    }
+
+    a:hover {
+      opacity: 0.7;
     }
 
   }
@@ -77,8 +98,9 @@ const About: React.FC = () => (
                 <span>#OOP</span>
               </p>
 
-              <p>
-                <a href="https://www.notion.so/thxwelchs/thxwelchs-fe44c93b11024508b8d6b5c4fcd4f829" target="_blank">노션 구경가기</a>
+              <p className="notion-page">
+                    <a href="https://thxwelchs.notion.site/fbbc17926aa842779c34eeee0e006ed7" target="_blank">
+<img src={notionImage} width="35"/><span>Notion</span></a>
               </p>
             </div>
           </PostFullContent>
