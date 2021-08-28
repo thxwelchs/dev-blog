@@ -3,8 +3,8 @@ const path = require('path');
 module.exports = {
   pathPrefix: "/thxwelchs.github.io",
   siteMetadata: {
-    title: `GDD blog`,
-    description: '오늘도 열심히 GDD(Google Driven Development)',
+    title: `Tech blog`,
+    description: '끄적끄적',
     siteUrl: 'https://thxwelchs.github.io', // full path to blog - no ending slash
   },
   mapping: {
@@ -13,6 +13,7 @@ module.exports = {
   plugins: [
     'gatsby-plugin-sitemap',
     'gatsby-plugin-sharp',
+    // 'gatsby-plugin-favicon',
     {
       resolve: `gatsby-plugin-disqus`,
       options: {

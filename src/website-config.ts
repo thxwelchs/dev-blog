@@ -49,8 +49,8 @@ export interface WebsiteConfig {
 }
 
 const config: WebsiteConfig = {
-  title: `GDD blog`,
-  description: '오늘도 열심히 GDD(Google Driven Development)',
+  title: `Tech blog`,
+  description: '끄적끄적',
   coverImage: 'img/blog-cover.jpg',
   logo: 'img/thxwelchs-logo-v2.png',
   lang: 'en',
