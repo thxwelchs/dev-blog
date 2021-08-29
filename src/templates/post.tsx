@@ -364,7 +364,7 @@ export const query = graphql`
     markdownRemark(fields: { slug: { eq: $slug } }) {
       html
       htmlAst
-      excerpt
+      excerpt(truncate: true)
       timeToRead
       frontmatter {
         title
@@ -402,7 +402,7 @@ export const query = graphql`
         node {
           id
           timeToRead
-          excerpt
+          excerpt(truncate: true)
           frontmatter {
             title
           }

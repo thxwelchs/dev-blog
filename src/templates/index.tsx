@@ -214,7 +214,7 @@ export const pageQuery = graphql`
     }
     allMarkdownRemark(
       sort: { fields: [frontmatter___date], order: DESC },
-      filter: { 
+      filter: {
         frontmatter: {
            draft: { ne: true },
            category: { ne: null }
@@ -252,7 +252,7 @@ export const pageQuery = graphql`
               }
             }
           }
-          excerpt
+          excerpt(truncate: true)
           fields {
             layout
             slug

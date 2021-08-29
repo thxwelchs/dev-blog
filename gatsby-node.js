@@ -59,7 +59,7 @@ exports.createPages = async ({ graphql, actions }) => {
       ) {
         edges {
           node {
-            excerpt
+            excerpt(truncate: true)
             timeToRead
             frontmatter {
               title
@@ -176,7 +176,6 @@ exports.createPages = async ({ graphql, actions }) => {
   // Create category pages
   const categoryTemplate = path.resolve('./src/templates/categories.tsx');
   const { categories } = categoriesResult.data.allMarkdownRemark;
-  console.log('categories', categories)
   categories.forEach(category=> {
     createPage({
       path: `/category/${category}/`,

@@ -129,7 +129,7 @@ export const pageQuery = graphql`
               }
             }
           }
-          excerpt
+          excerpt(truncate: true)
           fields {
             layout
             slug

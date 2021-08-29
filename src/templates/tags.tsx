@@ -155,7 +155,7 @@ export const pageQuery = graphql`
       totalCount
       edges {
         node {
-          excerpt
+          excerpt(truncate: true)
           timeToRead
           frontmatter {
             title
