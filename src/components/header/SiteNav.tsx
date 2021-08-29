@@ -127,7 +127,6 @@ class SiteNav extends React.Component<SiteNavProps> {
 
   render() {
     const { isHome = false } = this.props;
-    console.log(this.props);
     return (
       <nav css={[isHome && HomeNavRaise, SiteNavStyles]}>
         <SiteNavLeft>
