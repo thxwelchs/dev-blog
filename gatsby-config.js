@@ -11,6 +11,17 @@ module.exports = {
     'MarkdownRemark.frontmatter.author': 'AuthorYaml',
   },
   plugins: [
+    {
+      resolve: `gatsby-plugin-robots-txt`,
+      options: {
+        host: `https://thxwelchs.github.io`,
+        sitemap: `https://thxwelchs.github.io/sitemap.xml`,
+        policy: [{
+          userAgent:'*',
+          allow: '/',
+        }],
+      },
+    },
     'gatsby-plugin-sitemap',
     'gatsby-plugin-sharp',
     // 'gatsby-plugin-favicon',
