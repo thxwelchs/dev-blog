@@ -63,7 +63,7 @@
     "react-emotion": "10.0.0",
     "react-helmet": "5.2.1",
     "rehype-react": "4.0.1",
-    "sharp": "^0.28.3"
+    "sharp": "^0.30.5"
   },
   "devDependencies": {
     "@types/classnames": "2.2.9",
