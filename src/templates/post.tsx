@@ -12,6 +12,7 @@ import Footer from '../components/Footer';
 import SiteNav from '../components/header/SiteNav';
 import PostCard from '../components/PostCard';
 import PostContent from '../components/PostContent';
+import Toc from '../components/Toc';
 import PostFullFooter from '../components/PostFullFooter';
 import PostFullFooterRight from '../components/PostFullFooterRight';
 import ReadNextCard from '../components/ReadNextCard';
@@ -291,20 +292,13 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
             {/* TODO: no-image css tag? */}
             <article css={[PostFull, !post.frontmatter.image && NoImage]}>
               <PostFullHeader>
-                <PostFullMeta>
-                  <PostFullMetaDate dateTime={post.frontmatter.date}>
-                    {post.frontmatter.userDate}
-                  </PostFullMetaDate>
-                  {post.frontmatter.tags &&
-                    post.frontmatter.tags.length > 0 && (
-                      <>
-                        <DateDivider>/</DateDivider>
-                        <Link to={`/tags/${_.kebabCase(post.frontmatter.tags[0])}/`}>
-                          {post.frontmatter.tags[0]}
-                        </Link>
-                      </>
-                  )}
-                </PostFullMeta>
+                {post.frontmatter.tags && post.frontmatter.tags.length > 0 && (
+                  <PostFullMeta>
+                    <Link to={`/tags/${_.kebabCase(post.frontmatter.tags[0])}/`}>
+                      {post.frontmatter.tags[0]}
+                    </Link>
+                  </PostFullMeta>
+                )}
                 <PostFullTitle>{post.frontmatter.title}</PostFullTitle>
               </PostFullHeader>
 
@@ -316,7 +310,12 @@ const PageTemplate: React.FC<PageTemplateProps> = props => {
                   />
                 </PostFullImage>
               )}
-              <PostContent htmlAst={post.htmlAst} />
+              <Toc />
+              <PostContent
+                htmlAst={post.htmlAst}
+                date={post.frontmatter.userDate}
+                dateTime={post.frontmatter.date}
+              />
 
               {/* The big email subscribe modal content */}
               {config.showSubscribe && <Subscribe title={config.title} />}
@@ -368,7 +367,7 @@ export const query = graphql`
       timeToRead
       frontmatter {
         title
-        userDate: date(formatString: "D MMMM YYYY")
+        userDate: date(formatString: "YYYY-MM-DD")
         date
         tags
         image {

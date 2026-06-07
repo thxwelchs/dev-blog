@@ -413,6 +413,16 @@ export const PostFullContent = styled.section`
     background: #252525;
   }
 
+  /* 인라인 코드(백틱)는 흰 본문 위에서 잘 보이게 밝은 배경 + 진한 글씨로 */
+  :not(pre) > code[class*='language-text'] {
+    color: ${darken('0.05', colors.darkgrey)};
+    background: ${colors.whitegrey};
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: 500 !important;
+  }
+
   pre[class*='language-'] {
     overflow: auto;
     padding: 1.3125rem;
@@ -560,13 +570,24 @@ const Ast = ({ ast, ...props }: any) => {
   return renderAst(ast);
 };
 
+const PostDate = styled.time`
+  display: block;
+  margin-bottom: 32px;
+  color: ${lighten('0.22', colors.midgrey)};
+  font-size: 1.3rem;
+  font-weight: 400;
+`;
+
 export interface PostContentProps {
   htmlAst: any;
+  date?: string;
+  dateTime?: string;
 }
 
-const PostContent: React.FC<PostContentProps> = ({ htmlAst }) => {
+const PostContent: React.FC<PostContentProps> = ({ htmlAst, date, dateTime }) => {
   return (
     <PostFullContent className="post-full-content">
+      {date && <PostDate dateTime={dateTime}>{date}</PostDate>}
       {/* TODO: this will apply the class when rehype-react is published https://github.com/rhysd/rehype-react/pull/11 */}
       <Ast className="post-content" ast={htmlAst} />
     </PostFullContent>

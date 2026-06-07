@@ -86,6 +86,24 @@ const SiteNavRight = styled.div`
   }
 `;
 
+const NavAbout = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+
+  a {
+    padding: 4px 2px;
+    color: #fff;
+    font-size: 1.1rem;
+    opacity: 0.55;
+  }
+
+  a:hover {
+    text-decoration: none;
+    opacity: 1;
+  }
+`;
+
 const SocialLinks = styled.div`
   flex-shrink: 0;
   display: flex;
@@ -136,9 +154,6 @@ class SiteNav extends React.Component<SiteNavProps> {
             <li role="menuitem">
               <Link to="/">Home</Link>
             </li>
-            <li role="menuitem">
-              <Link to="/about">About</Link>
-            </li>
             <StaticQuery
               query={graphql`
                 query {
@@ -152,6 +167,9 @@ class SiteNav extends React.Component<SiteNavProps> {
                 return data.allMarkdownRemark.categories.map((category: string) => <li role="menuitem" key={category}><Link to={`/category/${category}/`}>{category}</Link></li>)
               }}
             />
+            <li role="menuitem">
+              <Link to="/tags/">Tags</Link>
+            </li>
             {/* <li role="menuitem">
               <Link to="/tags/getting-started/">Getting Started</Link>
             </li>
@@ -161,6 +179,9 @@ class SiteNav extends React.Component<SiteNavProps> {
           </ul>
         </SiteNavLeft>
         <SiteNavRight>
+          <NavAbout>
+            <Link to="/about">About</Link>
+          </NavAbout>
           <SocialLinks>
             {config.facebook && (
               <a
