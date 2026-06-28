@@ -2,8 +2,9 @@
 # Node.js-Specific Ignores
 # =========================
 
-# Build directory
-public/
+# Build output (Astro)
+dist/
+.astro/
 
 # Gatsby cache
 .cache/
@@ -115,3 +116,4 @@ $RECYCLE.BIN/
 *.lnk
 .vscode
 .idea/
+public/search-index.json

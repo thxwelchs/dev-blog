@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Search">
+  <h1 class="page-title">Search</h1>
+  <div class="searchbox">
+    <input id="q" type="search" autofocus placeholder="제목·내용·태그로 검색…" autocomplete="off" />
+  </div>
+  <p id="status" class="status"></p>
+  <ul id="results" class="results"></ul>
+</Base>
+
+<style>
+  .page-title { font-size: 2.6rem; margin: 0 0 14px; }
+  .searchbox input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid #d9dde2;
+    border-radius: 10px;
+    font-size: 1.7rem;
+    outline: none;
+  }
+  .searchbox input:focus { border-color: #3b6ee0; box-shadow: 0 0 0 3px rgba(59,110,224,.15); }
+  .status { color: #9aa0a8; font-size: 1.4rem; margin: 12px 2px 0; }
+  .results { list-style: none; margin: 18px 0 0; padding: 0; }
+  .results li { padding: 18px 2px; border-bottom: 1px solid #eef0f2; }
+  .results a.t { font-size: 1.9rem; font-weight: 600; color: #15171a; }
+  .results a.t:hover { color: #3b6ee0; }
+  .results .badge { margin-left: 8px; padding: 2px 9px; border-radius: 12px; font-size: 1.15rem; font-weight: 600; background: #eef1f6; color: #5a616b; }
+  .results .badge.series { background: #e7effd; color: #3b6ee0; }
+  .results .ex { margin: 4px 0 0; color: #5a616b; font-size: 1.45rem; }
+  .results .d { margin-top: 6px; color: #aab0b8; font-size: 1.3rem; }
+  .results mark { background: #fff1a8; border-radius: 2px; }
+</style>
+
+<script>
+  import FlexSearch from 'flexsearch';
+
+  interface Doc {
+    slug: string; title: string; tags: string[]; category: string;
+    series: string; date: string; excerpt: string; text: string; tokens: string;
+  }
+
+  const input = document.getElementById('q') as HTMLInputElement;
+  const statusEl = document.getElementById('status')!;
+  const list = document.getElementById('results')!;
+
+  let index: any = null;
+  const map: Record<string, Doc> = {};
+
+  function esc(s: string) {
+    return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  }
+  function hl(text: string, q: string) {
+    if (!q) return esc(text);
+    const i = text.toLowerCase().indexOf(q.toLowerCase());
+    if (i === -1) return esc(text);
+    return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+  }
+  function snippet(d: Doc, q: string) {
+    if (!q) return d.excerpt;
+    const i = d.text.indexOf(q.toLowerCase());
+    if (i === -1) return d.excerpt;
+    const s = Math.max(0, i - 40);
+    return (s > 0 ? '…' : '') + d.text.slice(s, s + 160);
+  }
+
+  function run(q: string) {
+    q = q.trim();
+    if (typeof window !== 'undefined') {
+      history.replaceState({}, '', q ? `/search/?q=${encodeURIComponent(q)}` : '/search/');
+    }
+    if (!q || !index) {
+      statusEl.textContent = index ? `${Object.keys(map).length}개의 글에서 검색합니다.` : '색인 불러오는 중…';
+      list.innerHTML = '';
+      return;
+    }
+    const hits = index.search(q, { limit: 60 });
+    const seen = new Set<string>();
+    const order: string[] = [];
+    ['title', 'tokens', 'tags', 'text'].forEach(f => {
+      const g = hits.find((h: any) => h.field === f);
+      if (g) g.result.forEach((s: string) => { if (!seen.has(s)) { seen.add(s); order.push(s); } });
+    });
+    const docs = order.map(s => map[s]).filter(Boolean);
+    statusEl.textContent = `"${q}" 검색 결과 ${docs.length}건`;
+    list.innerHTML = docs.map(d => `
+      <li>
+        <a class="t" href="${d.slug}">${hl(d.title, q)}</a>
+        <span class="badge">${esc(d.category)}</span>
+        ${d.series ? `<span class="badge series">${esc(d.series)}</span>` : ''}
+        <p class="ex">${hl(snippet(d, q), q)}</p>
+        <div class="d">${esc(d.date)}</div>
+      </li>`).join('');
+  }
+
+  fetch('/search-index.json')
+    .then(r => r.json())
+    .then((data: Doc[]) => {
+      index = new FlexSearch.Document({
+        tokenize: 'forward',
+        document: { id: 'slug', index: ['title', 'tokens', 'tags', 'text'] },
+      });
+      data.forEach(d => {
+        map[d.slug] = d;
+        index.add({ slug: d.slug, title: d.title, tokens: d.tokens, tags: d.tags.join(' '), text: d.text });
+      });
+      const q0 = new URLSearchParams(location.search).get('q') || '';
+      if (q0) input.value = q0;
+      run(input.value);
+    })
+    .catch(() => { statusEl.textContent = '색인을 불러오지 못했습니다.'; });
+
+  input.addEventListener('input', () => run(input.value));
+</script>

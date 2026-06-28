@@ -1,0 +1,160 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+function cleanTitle(seriesName: string, title: string): string {
+  let t = title.trim();
+  if (t.startsWith(seriesName)) t = t.slice(seriesName.length).trim();
+  t = t.replace(/^[-:]\s*/, '');
+  t = t.replace(/^\d+\s*편\s*[-:]?\s*/, '');
+  t = t.replace(/^\d+\s*[-:]\s*/, '');
+  t = t.replace(/^[-:]\s*/, '');
+  return t || title;
+}
+const ym = (d: Date) => d.toISOString().slice(0, 7).replace('-', '.');
+
+const all = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
+const SPECIAL = '트러블슈팅';
+const map: Record<string, typeof all> = {};
+all.forEach(p => {
+  (map[p.data.series!] = map[p.data.series!] || []).push(p);
+});
+
+const series = Object.keys(map)
+  .map(name => {
+    // 날짜순 자동 정렬 (seriesOrder 수동 관리 불필요)
+    const parts = map[name].sort(
+      (a, b) => +a.data.date - +b.data.date,
+    );
+    return {
+      name,
+      parts,
+      from: ym(parts[0].data.date),
+      to: ym(parts[parts.length - 1].data.date),
+    };
+  })
+  .sort((a, b) => (a.to < b.to ? 1 : -1));
+
+// 트러블슈팅은 일반 시리즈 그리드와 섞지 않고, 아래에 별도 섹션으로 분리
+const mainSeries = series.filter(s => s.name !== SPECIAL);
+const troubleSeries = series.filter(s => s.name === SPECIAL);
+---
+
+<Base title="Series" wide={true}>
+  <h1 class="page-title">Series</h1>
+  <div class="grid">
+    {
+      mainSeries.map(s => (
+        <section class="card">
+          <header class="head">
+            <h2>{s.name}</h2>
+            <span class="meta">
+              {s.parts.length}편 · {s.from === s.to ? s.from : `${s.from} ~ ${s.to}`}
+            </span>
+          </header>
+          <ol>
+            {s.parts.map((p, i) => (
+              <li>
+                <a href={`/${p.id}/`}>
+                  <span class="num">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="t">{cleanTitle(s.name, p.data.title)}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+
+  {
+    troubleSeries.length > 0 && (
+      <section class="ts-block">
+        <h2 class="ts-title">🔧 트러블슈팅</h2>
+        <p class="ts-desc">운영하며 만난 문제를 추적·해결한 기록</p>
+        <div class="grid">
+          {troubleSeries.map(s => (
+            <section class="card special">
+              <header class="head">
+                <h2>{s.name}</h2>
+                <span class="meta">
+                  {s.parts.length}편 · {s.from === s.to ? s.from : `${s.from} ~ ${s.to}`}
+                </span>
+              </header>
+              <ol>
+                {s.parts.map((p, i) => (
+                  <li>
+                    <a href={`/${p.id}/`}>
+                      <span class="num">{String(i + 1).padStart(2, '0')}</span>
+                      <span class="t">{cleanTitle(s.name, p.data.title)}</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  /* 매트릭스로 쭈욱 + 레거시(올드 웹) 톤: 각진 모서리·모노스페이스·플랫 보더 */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    border: 1px solid #d7dbe0;
+    border-radius: 3px;
+    padding: 0;
+    background: #fff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { border-color: #9aa3ad; box-shadow: 3px 3px 0 #e9ecef; }
+
+  /* 트러블슈팅: 시리즈 그리드 안에 있되 러스트 톤으로 도드라지게 */
+  .card.special { border-color: #c0703a; box-shadow: 2px 2px 0 #f1e3d8; }
+  .card.special:hover { border-color: #a44c1e; box-shadow: 3px 3px 0 #ead7c7; }
+  .card.special .head { background: #fbf3ec; border-bottom-color: #ecd9c8; }
+  .card.special .head h2 { color: #8a3f18; }
+  /* 트러블슈팅: Series 카드 아래 별도 섹션 */
+  .ts-block { margin-top: 52px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .ts-title { margin: 0; font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; color: #8a3f18; }
+  .ts-desc { margin: 6px 0 20px; color: var(--sub); font-size: 1.45rem; }
+
+  .head {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e6e9ed;
+    background: #fafbfc;
+  }
+  .head h2 { margin: 0; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; }
+  .head .meta {
+    display: block;
+    margin-top: 3px;
+    color: var(--sub);
+    font-family: var(--mono);
+    font-size: 1.15rem;
+  }
+
+  ol { list-style: none; margin: 0; padding: 6px 0; }
+  ol li a {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 14px;
+    color: var(--ink);
+    transition: background 0.12s, color 0.12s;
+  }
+  ol li a:hover { background: #f2f4f7; color: var(--accent); }
+  .num {
+    flex: 0 0 auto;
+    color: #9aa3ad;
+    font-family: var(--mono);
+    font-size: 1.2rem;
+  }
+  ol li a:hover .num { color: var(--accent); }
+  .t { font-size: 1.4rem; line-height: 1.4; }
+</style>

@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (
+  await getCollection('blog', ({ data }) => !data.draft && data.category === '엔지니어링')
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title="thxwelchs">
+  <ul class="post-list">
+    {posts.map(p => <PostCard post={p} />)}
+  </ul>
+</Base>

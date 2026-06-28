@@ -1,0 +1,501 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { ymd } from '../lib/text';
+import { GISCUS, giscusReady } from '../consts';
+
+const gReady = giscusReady();
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map(p => ({ params: { slug: p.id }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+// Disqus 댓글 (옛 사이트와 동일: shortname thxwelchs, url 기준이라 기존 스레드 그대로 연결)
+const pageUrl = new URL(`/${post.id}/`, 'https://thxwelchs.github.io').href;
+const pageId = post.id;
+const pageTitle = post.data.title;
+// 본문 헤딩 전부(글마다 #(h1)~###(h3) 혼용). 제목은 frontmatter라 headings에 없음.
+const toc = headings.filter(h => h.depth >= 1 && h.depth <= 3);
+const minDepth = toc.length ? Math.min(...toc.map(h => h.depth)) : 1;
+const hasToc = toc.length > 0;
+
+// 시리즈 글이면 같은 시리즈의 다른 편 목록을 사이드바에 표시
+const isSeries = !!post.data.series;
+const seriesName = post.data.series ?? '';
+const seriesHref = '/series/';
+const seriesParts = isSeries
+  ? (await getCollection('blog', ({ data }) => !data.draft && data.series === seriesName)).sort(
+      (a, b) => +a.data.date - +b.data.date,   // 날짜순 자동 정렬 (seriesOrder 불필요)
+    )
+  : [];
+function seriesPartTitle(title: string): string {
+  let t = title.trim();
+  if (seriesName && t.startsWith(seriesName)) t = t.slice(seriesName.length).trim();
+  t = t
+    .replace(/^[-:]\s*/, '')
+    .replace(/^\d+\s*편\s*[-:]?\s*/, '')
+    .replace(/^\d+\s*[-:]\s*/, '')
+    .replace(/^[-:]\s*/, '');
+  return t || title;
+}
+const curIdx = seriesParts.findIndex(p => p.id === post.id);
+const showAside = hasToc;
+---
+
+<Base
+  title={post.data.title}
+  description={post.data.title}
+  wide={showAside}
+  image={post.data.image}
+  type="article"
+>
+  <div class:list={['layout', { 'has-toc': showAside }]}>
+    <article class="post">
+      <h1>{post.data.title}</h1>
+      <div class="meta">
+        {ymd(post.data.date)} · {post.data.category}
+        {isSeries && (
+          <>
+            {' · '}
+            <a class="series-badge" href={seriesHref}>시리즈 · {seriesName}</a>
+          </>
+        )}
+      </div>
+      {post.data.image && <img class="cover" src={post.data.image} alt={post.data.title} />}
+      <div class="content">
+        <Content />
+      </div>
+
+      {
+        isSeries && seriesParts.length > 1 && (
+          <section class="series-foot">
+            <p class="sf-h">
+              <span class="sf-label">시리즈</span>
+              <a href={seriesHref}>{seriesName}</a>
+              <span class="sf-count">전 {seriesParts.length}편</span>
+            </p>
+            <ol class="sf-list">
+              {seriesParts.map((p, i) => (
+                <li class:list={[{ cur: i === curIdx }]}>
+                  <a href={`/${p.id}/`} aria-current={i === curIdx ? 'page' : undefined}>
+                    <span class="sf-num">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="sf-text">{seriesPartTitle(p.data.title)}</span>
+                    {i === curIdx - 1 && <span class="sf-tag">이전</span>}
+                    {i === curIdx && <span class="sf-tag cur">현재 글</span>}
+                    {i === curIdx + 1 && <span class="sf-tag">다음</span>}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )
+      }
+
+      <section class="comments">
+        <div class="comments-top">
+          <h2 class="comments-h">댓글</h2>
+          <div class="cmt-tabs" role="tablist">
+            <button type="button" class="cmt-tab" data-tab="giscus">GitHub</button>
+            <button type="button" class="cmt-tab" data-tab="disqus">Disqus</button>
+          </div>
+        </div>
+        <div class="cmt-panel" data-panel="giscus">
+          {gReady ? <div class="giscus-mount"></div> : <p class="cmt-note">GitHub(giscus) 댓글은 설정 완료 후 활성화됩니다.</p>}
+        </div>
+        <div class="cmt-panel" data-panel="disqus" hidden>
+          <div id="disqus_thread"></div>
+        </div>
+      </section>
+    </article>
+
+    {
+      showAside && (
+        <aside class="toc">
+          <div class="toc-inner">
+            {hasToc && (
+              <nav>
+                <p class="toc-h">목차</p>
+                <ul>
+                  {toc.map(h => (
+                    <li class:list={[`lv${h.depth - minDepth}`]}>
+                      <a href={`#${h.slug}`}>{h.text}</a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
+          </div>
+        </aside>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  /* 본문은 항상 가운데(800px), TOC는 오른쪽 빈 여백에 넉넉히. 본문 위치는 TOC 유무와 무관. */
+  .layout.has-toc {
+    display: grid;
+    grid-template-columns: 1fr min(800px, 100%) 1fr;
+    column-gap: 0;
+    align-items: start;
+  }
+  .layout.has-toc .post { grid-column: 2; }
+  .post { max-width: 800px; margin: 0 auto; min-width: 0; }
+
+  .comments { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .comments-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 18px;
+  }
+  .comments-h { margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; }
+  .cmt-tabs { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .cmt-tab {
+    appearance: none; border: 0; background: #fff; cursor: pointer;
+    padding: 6px 14px; font-size: 1.3rem; color: var(--sub);
+    font-family: inherit; transition: background 0.15s, color 0.15s;
+  }
+  .cmt-tab + .cmt-tab { border-left: 1px solid var(--line); }
+  .cmt-tab:hover { color: var(--ink); }
+  .cmt-tab.on { background: var(--ink); color: #fff; }
+  .cmt-note { color: var(--sub); font-size: 1.45rem; padding: 18px 0; }
+
+  /* TOC: 오른쪽 칸 전체를 차지하고 화면 세로 중앙에 고정 */
+  .toc {
+    grid-column: 3;
+    align-self: stretch;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;       /* 세로 중앙 */
+    padding-left: 56px;        /* 본문과 간격 */
+    padding-right: 8px;
+  }
+  .toc-inner {
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .toc nav { width: 100%; font-size: 1.35rem; }
+  .toc-h { margin: 0 0 10px; font-weight: 700; color: var(--ink); font-size: 1.4rem; }
+  .series-badge { color: var(--accent); text-decoration: none; }
+  .series-badge:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* 본문 하단 시리즈 추천 목록 */
+  .series-foot {
+    margin-top: 48px;
+    padding: 22px 24px 8px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fafbfc;
+  }
+  .sf-h {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    margin: 0 0 14px;
+    font-size: 1.5rem;
+  }
+  .sf-label {
+    flex: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: var(--accent);
+    border-radius: 5px;
+    padding: 2px 8px;
+  }
+  .sf-h a { color: var(--ink); text-decoration: none; font-weight: 700; }
+  .sf-h a:hover { color: var(--accent); }
+  .sf-count { margin-left: auto; font-size: 1.25rem; color: var(--sub); font-weight: 400; }
+  .sf-list { list-style: none; margin: 0; padding: 0; }
+  .sf-list li + li { border-top: 1px dashed var(--line); }
+  .sf-list li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 4px;
+    color: var(--sub);
+    line-height: 1.5;
+    text-decoration: none;
+  }
+  .sf-list li a:hover { color: var(--accent); }
+  .sf-list li a:hover .sf-text { color: var(--accent); }
+  .sf-num {
+    flex: none;
+    font-family: var(--mono);
+    font-size: 1.25rem;
+    color: var(--sub);
+    width: 1.8em;
+    text-align: right;
+  }
+  .sf-text { font-size: 1.4rem; color: var(--ink); text-wrap: pretty; }
+  .sf-tag {
+    flex: none;
+    margin-left: auto;
+    font-size: 1.1rem;
+    color: var(--sub);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 7px;
+    background: #fff;
+  }
+  .sf-tag.cur { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .sf-list li.cur { background: #fff; border-radius: 8px; }
+  .sf-list li.cur a { padding-left: 10px; padding-right: 10px; }
+  .sf-list li.cur .sf-text { font-weight: 700; }
+  .sf-list li.cur .sf-num { color: var(--accent); }
+  .toc ul { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+  .toc li a {
+    display: block;
+    padding: 6px 0 6px 16px;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+    color: var(--sub);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+  .toc li.lv1 a { padding-left: 30px; font-size: 1.25rem; }
+  .toc li.lv2 a { padding-left: 44px; font-size: 1.25rem; }
+  .toc li a:hover,
+  .toc li a.active { color: var(--accent); border-left-color: var(--accent); }
+
+  /* 좁은 화면(우측 여백 부족): 1열 + 목차를 본문 위 박스로 */
+  @media (max-width: 1180px) {
+    .layout.has-toc { display: block; }
+    .layout.has-toc .post { grid-column: auto; max-width: 800px; }
+    .toc {
+      position: static;
+      height: auto;
+      display: block;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+    .toc-inner { max-height: none; overflow: visible; }
+    .toc nav { max-height: none; }
+    .toc ul { border-left: none; }
+    .layout.has-toc .post { margin: 0 auto; }
+  }
+</style>
+
+<script is:inline define:vars={{ pageUrl, pageId, pageTitle, giscus: GISCUS, gReady }}>
+  // 한 섹션 안 GitHub(giscus) / Disqus 탭. 둘 다 활성, 탭 열릴 때만 로드.
+  (function () {
+    var loaded = { giscus: false, disqus: false };
+
+    function loadDisqus() {
+      if (loaded.disqus) return;
+      loaded.disqus = true;
+      window.disqus_config = function () {
+        this.page.url = pageUrl;
+        this.page.identifier = pageId;
+        this.page.title = pageTitle;
+      };
+      var s = document.createElement('script');
+      s.src = 'https://thxwelchs.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', String(+new Date()));
+      document.body.appendChild(s);
+    }
+
+    function loadGiscus() {
+      if (loaded.giscus || !gReady) return;
+      loaded.giscus = true;
+      var mount = document.querySelector('.cmt-panel[data-panel="giscus"] .giscus-mount');
+      if (!mount) return;
+      var s = document.createElement('script');
+      s.src = 'https://giscus.app/client.js';
+      var attrs = {
+        'data-repo': giscus.repo,
+        'data-repo-id': giscus.repoId,
+        'data-category': giscus.category,
+        'data-category-id': giscus.categoryId,
+        'data-mapping': 'pathname',
+        'data-strict': '0',
+        'data-reactions-enabled': '1',
+        'data-emit-metadata': '0',
+        'data-input-position': 'bottom',
+        'data-theme': 'light',
+        'data-lang': 'ko',
+      };
+      Object.keys(attrs).forEach(function (k) { s.setAttribute(k, attrs[k]); });
+      s.crossOrigin = 'anonymous';
+      s.async = true;
+      mount.appendChild(s);
+    }
+
+    function show(tab) {
+      document.querySelectorAll('.cmt-panel').forEach(function (p) {
+        p.hidden = p.getAttribute('data-panel') !== tab;
+      });
+      document.querySelectorAll('.cmt-tab').forEach(function (b) {
+        b.classList.toggle('on', b.getAttribute('data-tab') === tab);
+      });
+      if (tab === 'disqus') loadDisqus();
+      if (tab === 'giscus') loadGiscus();
+    }
+
+    document.querySelectorAll('.cmt-tab').forEach(function (b) {
+      b.addEventListener('click', function () { show(b.getAttribute('data-tab')); });
+    });
+    show(gReady ? 'giscus' : 'disqus');
+  })();
+</script>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc a'));
+  const map = new Map<string, HTMLAnchorElement>();
+  links.forEach(a => {
+    const id = decodeURIComponent(a.getAttribute('href')!.slice(1));
+    map.set(id, a);
+  });
+  const targets = Array.from(map.keys())
+    .map(id => document.getElementById(id))
+    .filter(Boolean) as HTMLElement[];
+
+  if (targets.length) {
+    const obs = new IntersectionObserver(
+      entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(l => l.classList.remove('active'));
+            map.get(e.target.id)?.classList.add('active');
+          }
+        });
+      },
+      { rootMargin: '0px 0px -75% 0px', threshold: 0 },
+    );
+    targets.forEach(t => obs.observe(t));
+  }
+</script>
+
+<style is:global>
+  /* 본문 이미지: figure로 감싸고 캡션 + '크게 보기' 버튼 */
+  .post .content figure.img-fig {
+    position: relative;
+    margin: 1.6em 0;
+    text-align: center;
+  }
+  .post .content figure.img-fig img {
+    margin: 0 auto;
+    cursor: zoom-in;
+    display: block;
+  }
+  .img-zoom-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    appearance: none;
+    border: 0;
+    border-radius: 7px;
+    padding: 6px 11px;
+    font-family: inherit;
+    font-size: 1.2rem;
+    color: #fff;
+    background: rgba(26, 26, 26, 0.62);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .post .content figure.img-fig:hover .img-zoom-btn,
+  .img-zoom-btn:focus-visible { opacity: 1; }
+  .img-zoom-btn:hover { background: rgba(26, 26, 26, 0.85); }
+  @media (hover: none) {
+    .img-zoom-btn { opacity: 1; }  /* 터치 기기엔 항상 보이게 */
+  }
+
+  /* 라이트박스 오버레이 */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 40px 24px;
+    background: rgba(0, 0, 0, 0.86);
+    cursor: zoom-out;
+  }
+  .lightbox[hidden] { display: none; }
+  .lightbox img {
+    max-width: 95vw;
+    max-height: 88vh;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    cursor: default;
+  }
+  .lb-close {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 2.6rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 6px 10px;
+  }
+</style>
+
+<script>
+  // 본문 이미지에 캡션(alt) + '크게 보기' 버튼을 붙이고, 클릭 시 라이트박스로 확대.
+  const content = document.querySelector('.post .content');
+  if (content) {
+    const lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.hidden = true;
+    lb.innerHTML =
+      '<button class="lb-close" type="button" aria-label="닫기">✕</button>' +
+      '<img alt="" />';
+    document.body.appendChild(lb);
+    const lbImg = lb.querySelector('img') as HTMLImageElement;
+
+    const openBox = (src: string, cap: string) => {
+      lbImg.src = src;
+      lbImg.alt = cap;
+      lb.hidden = false;
+      document.body.style.overflow = 'hidden';
+    };
+    const closeBox = () => {
+      lb.hidden = true;
+      lbImg.removeAttribute('src');
+      document.body.style.overflow = '';
+    };
+    lb.addEventListener('click', e => {
+      const t = e.target as HTMLElement;
+      if (t === lb || t.classList.contains('lb-close')) closeBox();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !lb.hidden) closeBox();
+    });
+
+    content.querySelectorAll('img').forEach(img => {
+      const cap = img.getAttribute('alt') || '';
+      const fig = document.createElement('figure');
+      fig.className = 'img-fig';
+      img.replaceWith(fig);
+      fig.appendChild(img);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'img-zoom-btn';
+      btn.textContent = '크게 보기';
+      fig.appendChild(btn);
+
+      const open = () => openBox(img.currentSrc || img.src, cap);
+      btn.addEventListener('click', open);
+      img.addEventListener('click', open);
+    });
+  }
+</script>

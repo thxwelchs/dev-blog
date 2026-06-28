@@ -1,0 +1,71 @@
+---
+import { excerpt, ymd } from '../lib/text';
+
+interface Props {
+  post: any;
+}
+const { post } = Astro.props;
+const d = post.data;
+const href = `/${post.id}/`;
+---
+
+<li class="row">
+  <a href={href} class="link">
+    <div class="meta">
+      <span class="cat">{d.category}</span>
+      <span class="date">{ymd(d.date)}</span>
+      {d.series && <span class="series">{d.series}</span>}
+    </div>
+    <h2 class="title">{d.title}</h2>
+    <p class="ex">{excerpt(post.body, 130)}</p>
+  </a>
+</li>
+
+<style>
+  .row { border-bottom: 1px solid var(--line); }
+  .link {
+    display: block;
+    padding: 22px 16px;
+    margin: 0 -16px;
+    border-radius: 10px;
+    transition: background 0.15s;
+  }
+  .link:hover { background: #f7f8fa; }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+    font-size: 1.25rem;
+    color: var(--sub);
+  }
+  .meta .cat {
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .meta .series::before { content: '·'; margin-right: 10px; color: var(--line); }
+  .meta .date { font-variant-numeric: tabular-nums; }
+
+  .title {
+    margin: 0;
+    font-size: 1.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    transition: color 0.15s;
+  }
+  .link:hover .title { color: var(--accent); }
+  .ex {
+    margin: 7px 0 0;
+    color: var(--sub);
+    font-size: 1.45rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

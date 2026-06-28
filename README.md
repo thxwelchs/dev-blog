@@ -3,11 +3,17 @@
 
 [블로그 구경 가기](https://thxwelchs.github.io)
 
-### 사용된 라이브러리
-- react (TypeScript)
-- emotion (css in js)
-- gatsby
-- gatsby-casper
-- disqus
+### 사용된 기술
+- [Astro](https://astro.build/)
+- Markdown (글은 `src/posts/*.md`)
+- Shiki (코드 하이라이트)
 
+### 로컬 실행
 
+```bash
+npm install
+npx astro dev      # http://localhost:4321
+npx astro build    # 정적 산출물 → dist/
+```
+
+Node 22 이상이 필요합니다.
