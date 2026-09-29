@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
-import { ymd } from '../lib/text';
+import { ymd, excerpt } from '../lib/text';
 import { GISCUS, giscusReady } from '../consts';
 
 const gReady = giscusReady();
@@ -47,7 +47,7 @@ const showAside = hasToc;
 
 <Base
   title={post.data.title}
-  description={post.data.title}
+  description={excerpt(post.body, 150) || post.data.title}
   wide={showAside}
   image={post.data.image}
   type="article"

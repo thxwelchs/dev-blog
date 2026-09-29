@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Host: https://thxwelchs.github.io
+Sitemap: https://thxwelchs.github.io/sitemap.xml
