@@ -27,6 +27,8 @@ DOMAIN = "thxwelchs.github.io"
 F_TITLE_EN = "/System/Library/Fonts/Supplemental/Hoefler Text.ttc"
 F_TITLE_KR = "/System/Library/Fonts/Supplemental/AppleMyungjo.ttf"
 F_LABEL = "/System/Library/Fonts/Supplemental/Georgia.ttf"
+# Georgia 에는 한글 글리프가 없어 한글 라벨이 두부(□)로 깨진다. 한글이면 명조로 그린다.
+F_LABEL_KR = "/System/Library/Fonts/Supplemental/AppleMyungjo.ttf"
 
 # 상단 라벨로 우선 쓰는 기술/언어 태그(소문자 매칭). 없으면 tags[0].
 TECH = ["java", "kotlin", "spring", "elasticsearch", "redis", "javascript", "typescript",
@@ -145,13 +147,14 @@ def make_cover(title, label, out):
 
     # 상단 카테고리(· LABEL ·)
     lab = label.upper() if label.isascii() else label
-    lf = font(F_LABEL, 27)
+    lf = font(F_LABEL_KR if has_kr(lab) else F_LABEL, 27)
     track = 8
     lab_w = text_w(d, lab, lf, track)
     dot_gap = 26
     draw_tracked(d, cx, 112, lab, lf, RUST, track)
-    d.text((cx - lab_w / 2 - dot_gap, 112), "·", font=lf, fill=RUST, anchor="mm")
-    d.text((cx + lab_w / 2 + dot_gap, 112), "·", font=lf, fill=RUST, anchor="mm")
+    dotf = font(F_LABEL, 27)
+    d.text((cx - lab_w / 2 - dot_gap, 112), "·", font=dotf, fill=RUST, anchor="mm")
+    d.text((cx + lab_w / 2 + dot_gap, 112), "·", font=dotf, fill=RUST, anchor="mm")
 
     # 제목 (폭+높이 자동 맞춤, 중앙 밴드에 배치)
     tpath = F_TITLE_KR if has_kr(title) else F_TITLE_EN

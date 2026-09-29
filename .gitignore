@@ -117,3 +117,6 @@ $RECYCLE.BIN/
 .vscode
 .idea/
 public/search-index.json
+
+# python
+__pycache__/
