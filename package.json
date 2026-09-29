@@ -10,7 +10,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "build:full": "yarn assets && astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "deploy": "~/.venvs/dev-blog/bin/python tools/build_search_index.py && npx astro build && npx -y gh-pages -d dist -b master -t -m Updates -r git@github.com:thxwelchs/thxwelchs.github.io.git"
   },
   "dependencies": {
     "astro": "^5.5.0",
