@@ -14,7 +14,6 @@ function cleanTitle(seriesName: string, title: string): string {
 const ym = (d: Date) => d.toISOString().slice(0, 7).replace('-', '.');
 
 const all = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
-const SPECIAL = '트러블슈팅';
 const map: Record<string, typeof all> = {};
 all.forEach(p => {
   (map[p.data.series!] = map[p.data.series!] || []).push(p);
@@ -35,16 +34,13 @@ const series = Object.keys(map)
   })
   .sort((a, b) => (a.to < b.to ? 1 : -1));
 
-// 트러블슈팅은 일반 시리즈 그리드와 섞지 않고, 아래에 별도 섹션으로 분리
-const mainSeries = series.filter(s => s.name !== SPECIAL);
-const troubleSeries = series.filter(s => s.name === SPECIAL);
 ---
 
 <Base title="Series" wide={true}>
   <h1 class="page-title">Series</h1>
   <div class="grid">
     {
-      mainSeries.map(s => (
+      series.map(s => (
         <section class="card">
           <header class="head">
             <h2>{s.name}</h2>
@@ -67,36 +63,6 @@ const troubleSeries = series.filter(s => s.name === SPECIAL);
     }
   </div>
 
-  {
-    troubleSeries.length > 0 && (
-      <section class="ts-block">
-        <h2 class="ts-title">🔧 트러블슈팅</h2>
-        <p class="ts-desc">운영하며 만난 문제를 추적·해결한 기록</p>
-        <div class="grid">
-          {troubleSeries.map(s => (
-            <section class="card special">
-              <header class="head">
-                <h2>{s.name}</h2>
-                <span class="meta">
-                  {s.parts.length}편 · {s.from === s.to ? s.from : `${s.from} ~ ${s.to}`}
-                </span>
-              </header>
-              <ol>
-                {s.parts.map((p, i) => (
-                  <li>
-                    <a href={`/${p.id}/`}>
-                      <span class="num">{String(i + 1).padStart(2, '0')}</span>
-                      <span class="t">{cleanTitle(s.name, p.data.title)}</span>
-                    </a>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          ))}
-        </div>
-      </section>
-    )
-  }
 </Base>
 
 <style>
@@ -115,15 +81,6 @@ const troubleSeries = series.filter(s => s.name === SPECIAL);
   }
   .card:hover { border-color: #9aa3ad; box-shadow: 3px 3px 0 #e9ecef; }
 
-  /* 트러블슈팅: 시리즈 그리드 안에 있되 러스트 톤으로 도드라지게 */
-  .card.special { border-color: #c0703a; box-shadow: 2px 2px 0 #f1e3d8; }
-  .card.special:hover { border-color: #a44c1e; box-shadow: 3px 3px 0 #ead7c7; }
-  .card.special .head { background: #fbf3ec; border-bottom-color: #ecd9c8; }
-  .card.special .head h2 { color: #8a3f18; }
-  /* 트러블슈팅: Series 카드 아래 별도 섹션 */
-  .ts-block { margin-top: 52px; padding-top: 32px; border-top: 1px solid var(--line); }
-  .ts-title { margin: 0; font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; color: #8a3f18; }
-  .ts-desc { margin: 6px 0 20px; color: var(--sub); font-size: 1.45rem; }
 
   .head {
     padding: 12px 14px;
