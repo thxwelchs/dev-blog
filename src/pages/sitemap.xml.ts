@@ -20,7 +20,7 @@ export const GET: APIRoute = async () => {
     { loc: `${SITE}/tags/` },
     ...categories.map(c => ({ loc: `${SITE}/category/${encodeURIComponent(c)}/` })),
     ...posts.map(p => ({
-      loc: `${SITE}/${encodeURIComponent(p.id)}/`,
+      loc: `${SITE}/${encodeURI(p.id)}/`,
       lastmod: p.data.date.toISOString(),
     })),
   ];

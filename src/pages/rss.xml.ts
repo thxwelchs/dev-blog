@@ -19,7 +19,7 @@ export const GET: APIRoute = async () => {
 
   const items = posts
     .map(p => {
-      const url = `${SITE}/${encodeURIComponent(p.id)}/`;
+      const url = `${SITE}/${encodeURI(p.id)}/`;
       return [
         '    <item>',
         `      <title>${esc(p.data.title)}</title>`,
