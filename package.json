@@ -14,7 +14,7 @@
     "deploy": "find public -name .DS_Store -delete; ~/.venvs/dev-blog/bin/python tools/build_search_index.py && npx astro build && npx -y gh-pages -d dist -b master -t -m Updates -r git@github.com:thxwelchs/thxwelchs.github.io.git"
   },
   "dependencies": {
-    "astro": "^5.5.0",
+    "astro": "^7.3.3",
     "flexsearch": "^0.7.43"
   }
 }
